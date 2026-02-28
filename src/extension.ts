@@ -8,7 +8,9 @@ import { getConfig } from "./config";
 import type { SpeechNode } from "./types";
 
 export function activate(context: vscode.ExtensionContext) {
+  const output = vscode.window.createOutputChannel("VoiceFlow Reader");
   const tts = createTtsEngine();
+  output.appendLine(`Platform: ${process.platform}`);
   const controller = new SpeechController(tts);
   const highlighter = new Highlighter();
   const statusBar = new StatusBar();
@@ -24,6 +26,19 @@ export function activate(context: vscode.ExtensionContext) {
 
   // --- Initialize context keys ---
   contextKeys.initialize();
+
+  // --- Check TTS availability on Linux ---
+  if (process.platform === "linux") {
+    tts.getVoices().then(
+      () => output.appendLine(`TTS engine ready`),
+      () => {
+        output.appendLine(`No TTS engine found`);
+        vscode.window.showWarningMessage(
+          "VoiceFlow Reader: No TTS engine found. Install espeak-ng: sudo apt install espeak-ng"
+        );
+      }
+    );
+  }
 
   // --- Update button visibility when editor or config changes ---
   context.subscriptions.push(
@@ -70,6 +85,12 @@ export function activate(context: vscode.ExtensionContext) {
     );
   });
 
+  controller.on("error", (err: Error, node: SpeechNode) => {
+    output.appendLine(
+      `[skip] "${node.text.slice(0, 60)}${node.text.length > 60 ? "…" : ""}" — ${err.message}`
+    );
+  });
+
   // --- Helper to set up document watchers ---
 
   function watchDocument(fileName: string) {
@@ -113,6 +134,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerTextEditorCommand("voice-flow-reader.speakHere", (editor) => {
       const cfg = getConfig();
       const pos = editor.selection.active;
+      const startOffset = editor.document.offsetAt(pos);
       activeFileName = editor.document.fileName;
       watchDocument(activeFileName);
       controller.start(
@@ -120,9 +142,7 @@ export function activate(context: vscode.ExtensionContext) {
         editor.document.fileName,
         cfg.voice,
         cfg.speed,
-        {
-          start: { line: pos.line + 1, column: pos.character },
-        }
+        { startOffset }
       );
     })
   );
@@ -134,6 +154,8 @@ export function activate(context: vscode.ExtensionContext) {
         const cfg = getConfig();
         const sel = editor.selection;
         if (sel.isEmpty) return;
+        const startOffset = editor.document.offsetAt(sel.start);
+        const endOffset = editor.document.offsetAt(sel.end);
         activeFileName = editor.document.fileName;
         watchDocument(activeFileName);
         controller.start(
@@ -141,16 +163,7 @@ export function activate(context: vscode.ExtensionContext) {
           editor.document.fileName,
           cfg.voice,
           cfg.speed,
-          {
-            start: {
-              line: sel.start.line + 1,
-              column: sel.start.character,
-            },
-            end: {
-              line: sel.end.line + 1,
-              column: sel.end.character,
-            },
-          }
+          { startOffset, endOffset }
         );
       }
     )
@@ -204,6 +217,7 @@ export function activate(context: vscode.ExtensionContext) {
       contextKeys.dispose();
       tts.dispose();
       clearDocListeners();
+      output.dispose();
     },
   });
 }

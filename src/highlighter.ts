@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 
 export class Highlighter {
   private decoration: vscode.TextEditorDecorationType | null = null;
+  private currentColor: string | null = null;
 
   highlight(
     editor: vscode.TextEditor,
@@ -9,19 +10,22 @@ export class Highlighter {
     endOffset: number,
     color: string
   ): void {
-    this.clear();
+    // Only recreate the decoration type when the color changes
+    if (this.currentColor !== color) {
+      this.clear();
+      this.decoration = vscode.window.createTextEditorDecorationType({
+        backgroundColor: color,
+        overviewRulerColor: color,
+        overviewRulerLane: vscode.OverviewRulerLane.Center,
+      });
+      this.currentColor = color;
+    }
 
     const startPos = editor.document.positionAt(startOffset);
     const endPos = editor.document.positionAt(endOffset);
     const range = new vscode.Range(startPos, endPos);
 
-    this.decoration = vscode.window.createTextEditorDecorationType({
-      backgroundColor: color,
-      overviewRulerColor: color,
-      overviewRulerLane: vscode.OverviewRulerLane.Center,
-    });
-
-    editor.setDecorations(this.decoration, [{ range }]);
+    editor.setDecorations(this.decoration!, [{ range }]);
     editor.revealRange(range, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
   }
 
@@ -29,6 +33,7 @@ export class Highlighter {
     if (this.decoration) {
       this.decoration.dispose();
       this.decoration = null;
+      this.currentColor = null;
     }
   }
 

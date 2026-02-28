@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-02-28
+
+### Fixed
+
+- spd-say speech rate overflowing valid range at higher speed multipliers
+- Character offset mismatch for emoji and astral-plane Unicode when using Speak From Cursor and Speak Selection
+- Sentence highlight decoration being recreated every sentence instead of reusing when color unchanged
+
+### Changed
+
+- SpeechRange now uses character offsets from VS Code API instead of manual line/column conversion
+- Added Output channel (Output panel → VoiceFlow Reader) for diagnostics and error logging
+- Linux users now see a warning on startup if no TTS engine is installed
+
+### Removed
+
+- Unused `detected` field in Linux TTS engine
+
 ## [1.0.0] - 2026-02-23
 
 ### Added

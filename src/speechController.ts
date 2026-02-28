@@ -92,11 +92,10 @@ export class SpeechController extends EventEmitter {
 
       try {
         await this.tts.speak(node.text, this.voice, this.speed);
-      } catch {
-        // Speech was interrupted (stop/pause) or engine error
+      } catch (err) {
         if (gen !== this.generation) return;
         if (this._state !== "playing") return;
-        // On engine error: skip to next node
+        this.emit("error", err instanceof Error ? err : new Error(String(err)), node);
       }
 
       if (gen !== this.generation) return;

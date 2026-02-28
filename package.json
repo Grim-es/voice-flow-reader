@@ -2,7 +2,7 @@
   "name": "voice-flow-reader",
   "displayName": "VoiceFlow Reader",
   "description": "Read text from the editor with full Unicode/Cyrillic support. Free, local, no API keys.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "shotariya",
   "license": "MIT",
   "icon": "assets/icon.png",

@@ -50,7 +50,6 @@ export class ContextKeys {
       return;
     }
 
-    const fileName = editor.document.fileName;
     // Untitled files have no extension — treat as matching
     if (editor.document.isUntitled) {
       vscode.commands.executeCommand(
@@ -61,6 +60,21 @@ export class ContextKeys {
       return;
     }
 
+    // Check for any wildcard variant: "*", "**", "*.*"
+    const matchAll = cfg.fileExtensions.some(
+      (e) => e === "*" || e === "**" || e === "*.*"
+    );
+
+    if (matchAll) {
+      vscode.commands.executeCommand(
+        "setContext",
+        "voice-flow-reader.matchesFileType",
+        true
+      );
+      return;
+    }
+
+    const fileName = editor.document.fileName;
     const ext = path.extname(fileName).toLowerCase().replace(/^\./, "");
     const extensions = cfg.fileExtensions.map((e) =>
       e
@@ -68,7 +82,8 @@ export class ContextKeys {
         .replace(/^\*\.?/, "")
         .toLowerCase()
     );
-    const matches = cfg.fileExtensions.includes("*") || extensions.includes(ext);
+    const matches = extensions.includes(ext);
+
     vscode.commands.executeCommand(
       "setContext",
       "voice-flow-reader.matchesFileType",

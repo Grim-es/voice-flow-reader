@@ -20,10 +20,6 @@ function isTxtParentNode(node: TxtNode): node is TxtParentNode {
   return "children" in node && Array.isArray((node as TxtParentNode).children);
 }
 
-/**
- * Recursively extract plain text from an AST node,
- * stripping away all markdown syntax.
- */
 function getPlainText(node: TxtNode): string {
   if (isTxtTextNode(node)) return node.value;
   if (isTxtParentNode(node)) {
@@ -32,22 +28,6 @@ function getPlainText(node: TxtNode): string {
   return node.raw || "";
 }
 
-/**
- * Convert 1-based line + 0-based column to a character offset.
- */
-function posToIndex(text: string, line: number, column: number): number {
-  let idx = 0;
-  let currentLine = 1;
-  while (currentLine < line && idx < text.length) {
-    if (text[idx] === "\n") currentLine++;
-    idx++;
-  }
-  return idx + column;
-}
-
-/**
- * Check if a node range overlaps with [startIdx, endIdx].
- */
 function overlaps(
   range: readonly [number, number],
   startIdx: number,
@@ -56,9 +36,6 @@ function overlaps(
   return range[1] > startIdx && range[0] < endIdx;
 }
 
-/**
- * Parse a document into an array of SpeechNodes (sentences with positions).
- */
 export function parseDocument(
   text: string,
   filePath: string,
@@ -67,14 +44,8 @@ export function parseDocument(
   const ext = path.extname(filePath).toLowerCase();
   const ast = MD_EXTS.has(ext) ? parseMarkdown(text) : parseText(text);
 
-  let startIdx = 0;
-  let endIdx = Infinity;
-  if (range) {
-    startIdx = posToIndex(text, range.start.line, range.start.column);
-    if (range.end) {
-      endIdx = posToIndex(text, range.end.line, range.end.column);
-    }
-  }
+  const startIdx = range?.startOffset ?? 0;
+  const endIdx = range?.endOffset ?? Infinity;
 
   const nodes: SpeechNode[] = [];
 
@@ -89,8 +60,6 @@ export function parseDocument(
 
       let sentenceParent: TxtParentNodeWithSentenceNode;
       try {
-        // splitAST expects TxtParagraphNode but works with any TxtParentNode
-        // that has children — cast at the library boundary
         sentenceParent = splitAST(node as unknown as Parameters<typeof splitAST>[0]);
       } catch {
         const plainText = getPlainText(node).trim();
@@ -107,7 +76,6 @@ export function parseDocument(
         if (child.type !== "Sentence") continue;
         if (!overlaps(child.range, startIdx, endIdx)) continue;
 
-        // child is a sentence node — its children are TxtNodes
         const plainText = getPlainText(child as unknown as TxtNode).trim();
         if (plainText) {
           nodes.push({

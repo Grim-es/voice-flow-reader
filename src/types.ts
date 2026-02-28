@@ -5,14 +5,9 @@ export interface SpeechNode {
   range: [number, number];
 }
 
-export interface SpeechPosition {
-  /** 1-based line number */
-  line: number;
-  /** 0-based column */
-  column: number;
-}
-
 export interface SpeechRange {
-  start: SpeechPosition;
-  end?: SpeechPosition;
+  /** Start character offset in the document text */
+  startOffset: number;
+  /** End character offset (exclusive). Omit to read to end of document. */
+  endOffset?: number;
 }

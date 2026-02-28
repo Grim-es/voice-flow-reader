@@ -6,7 +6,6 @@ type LinuxCmd = "espeak-ng" | "espeak" | "spd-say";
 export class LinuxTts implements TtsEngine {
   private process: ChildProcess | null = null;
   private command: LinuxCmd | null = null;
-  private detected = false;
 
   private async detect(): Promise<LinuxCmd> {
     if (this.command) return this.command;
@@ -14,7 +13,6 @@ export class LinuxTts implements TtsEngine {
     for (const cmd of ["espeak-ng", "espeak", "spd-say"] as LinuxCmd[]) {
       if (await commandExists(cmd)) {
         this.command = cmd;
-        this.detected = true;
         return cmd;
       }
     }
@@ -38,9 +36,9 @@ export class LinuxTts implements TtsEngine {
         proc.stdin!.write(text);
         proc.stdin!.end();
       } else {
-        // spd-say: no stdin support, pass text as argument
-        const wpm = Math.round(speed * 175);
-        const args = ["-r", String(wpm - 175)]; // spd-say rate is relative
+        // spd-say: -r accepts -100 to +100 (percentage relative to normal)
+        const rate = Math.max(-100, Math.min(100, Math.round((speed - 1) * 100)));
+        const args = ["-r", String(rate)];
         if (voice) args.push("-l", voice);
         args.push("--wait", "--", text);
         proc = spawn(cmd, args);
