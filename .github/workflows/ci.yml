@@ -33,7 +33,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.node == 20
 
       - name: Upload VSIX
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: matrix.os == 'ubuntu-latest' && matrix.node == 20
         with:
           name: voice-flow-reader-vsix
