@@ -1,0 +1,175 @@
+{
+  "name": "voice-flow-reader",
+  "displayName": "VoiceFlow Reader",
+  "description": "Read text from the editor with full Unicode/Cyrillic support. Free, local, no API keys.",
+  "version": "1.0.0",
+  "publisher": "shotariya",
+  "license": "MIT",
+  "icon": "assets/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Grim-es/voice-flow-reader"
+  },
+  "homepage": "https://github.com/Grim-es/voice-flow-reader#readme",
+  "bugs": {
+    "url": "https://github.com/Grim-es/voice-flow-reader/issues"
+  },
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "keywords": [
+    "tts",
+    "text-to-speech",
+    "voice-flow",
+    "speech",
+    "voice",
+    "reader",
+    "accessibility",
+    "markdown",
+    "cyrillic",
+    "unicode",
+    "narrator"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "engines": {
+    "vscode": "^1.107.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "voice-flow-reader.speakDocument",
+        "title": "VoiceFlow Reader: Speak Document",
+        "icon": "$(play)"
+      },
+      {
+        "command": "voice-flow-reader.speakHere",
+        "title": "VoiceFlow Reader: Speak From Cursor"
+      },
+      {
+        "command": "voice-flow-reader.speakSelection",
+        "title": "VoiceFlow Reader: Read Selection",
+        "icon": "$(play)"
+      },
+      {
+        "command": "voice-flow-reader.pause",
+        "title": "VoiceFlow Reader: Pause",
+        "icon": "$(debug-pause)"
+      },
+      {
+        "command": "voice-flow-reader.resume",
+        "title": "VoiceFlow Reader: Resume",
+        "icon": "$(play)"
+      },
+      {
+        "command": "voice-flow-reader.stop",
+        "title": "VoiceFlow Reader: Stop",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "voice-flow-reader.selectVoice",
+        "title": "VoiceFlow Reader: Select Voice"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "voice-flow-reader.speakDocument",
+          "group": "navigation@-99",
+          "when": "voice-flow-reader.showButtons && voice-flow-reader.matchesFileType && !voice-flow-reader.isPlaying && !voice-flow-reader.isPaused"
+        },
+        {
+          "command": "voice-flow-reader.resume",
+          "group": "navigation@-99",
+          "when": "voice-flow-reader.showButtons && voice-flow-reader.matchesFileType && voice-flow-reader.isPaused"
+        },
+        {
+          "command": "voice-flow-reader.pause",
+          "group": "navigation@-98",
+          "when": "voice-flow-reader.showButtons && voice-flow-reader.matchesFileType && voice-flow-reader.isPlaying"
+        },
+        {
+          "command": "voice-flow-reader.stop",
+          "group": "navigation@-97",
+          "when": "voice-flow-reader.showButtons && voice-flow-reader.matchesFileType && (voice-flow-reader.isPlaying || voice-flow-reader.isPaused)"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "voice-flow-reader.speakSelection",
+          "group": "voice-flow-reader@1",
+          "when": "editorHasSelection"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "VoiceFlow Reader",
+      "properties": {
+        "voice-flow-reader.voice": {
+          "type": "string",
+          "default": "",
+          "description": "TTS voice name. Leave empty for system default. Use the 'Select Voice' command to browse available voices."
+        },
+        "voice-flow-reader.speed": {
+          "type": "number",
+          "default": 1,
+          "minimum": 0.1,
+          "maximum": 5,
+          "description": "Speech speed multiplier (1.0 = normal)"
+        },
+        "voice-flow-reader.highlightColor": {
+          "type": "string",
+          "default": "rgba(255, 255, 0, 0.3)",
+          "description": "Background color for the currently spoken sentence"
+        },
+        "voice-flow-reader.showEditorButtons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show Play / Pause / Stop buttons in the editor title bar"
+        },
+        "voice-flow-reader.fileExtensions": {
+          "type": "array",
+          "default": [
+            "*"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "markdownDescription": "File extensions that show editor buttons. Each item is an extension **without the dot** — for example `md`, `txt`, `py`. Use a single `*` entry to match all files."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.cjs",
+    "watch": "node esbuild.cjs --watch",
+    "lint": "eslint src/",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.3.2",
+    "@types/vscode": "^1.107.0",
+    "@vscode/vsce": "^3.7.1",
+    "esbuild": "^0.27.3",
+    "eslint": "^10.0.2",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1"
+  },
+  "dependencies": {
+    "@textlint/ast-node-types": "^15.5.2",
+    "@textlint/ast-traverse": "^15.5.2",
+    "@textlint/markdown-to-ast": "^15.5.2",
+    "@textlint/text-to-ast": "^15.5.2",
+    "sentence-splitter": "^5.0.0"
+  }
+}

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Discussions
+    url: https://github.com/Grim-es/voice-flow-reader/discussions
+    about: Ask questions or share ideas
+  - name: Support the project
+    url: https://buymeacoffee.com/shotariya
+    about: Buy me a coffee to support development

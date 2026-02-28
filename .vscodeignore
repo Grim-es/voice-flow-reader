@@ -1,0 +1,17 @@
+.vscode/**
+.github/**
+src/**
+node_modules/**
+tsconfig.json
+esbuild.cjs
+eslint.config.mjs
+.prettierrc
+.prettierignore
+.editorconfig
+.gitignore
+.gitattributes
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+*.ts
+!dist/**
+!assets/**

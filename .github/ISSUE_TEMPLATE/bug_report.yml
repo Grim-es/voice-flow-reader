@@ -1,0 +1,86 @@
+name: Bug Report
+description: Report an issue with VoiceFlow Reader
+labels: [bug]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Describe the bug.
+      placeholder: |
+        Example: "English text plays garbled audio instead of spoken words"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce-steps
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce this issue?
+      placeholder: |
+        1. Open a .md file containing Latin text
+        2. Run "VoiceFlow Reader: Speak Document"
+        3. Observe garbled output
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      placeholder: "Windows 11 23H2 / macOS 15.1 / Ubuntu 24.04"
+    validations:
+      required: true
+
+  - type: input
+    id: vscode-version
+    attributes:
+      label: VS Code version
+      placeholder: "1.96.0"
+    validations:
+      required: true
+
+  - type: input
+    id: extension-version
+    attributes:
+      label: Extension version
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: voice
+    attributes:
+      label: TTS Voice
+      placeholder: "Microsoft George Desktop"
+
+  - type: input
+    id: file-type
+    attributes:
+      label: File type
+      placeholder: ".md / .txt / .rst"
+
+  - type: textarea
+    id: settings
+    attributes:
+      label: Extension settings
+      description: >
+        Paste your `voice-flow-reader.*` settings from VS Code.
+      render: json
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: >
+        Open **Output** panel → select **VoiceFlow Reader** from the dropdown.
+        Paste any relevant output here.
+      render: shell
