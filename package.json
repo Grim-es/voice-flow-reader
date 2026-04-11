@@ -168,7 +168,7 @@
   },
   "dependencies": {
     "@textlint/ast-node-types": "^15.5.2",
-    "@textlint/ast-traverse": "^15.5.2",
+    "@textlint/ast-traverse": "^15.5.4",
     "@textlint/markdown-to-ast": "^15.5.2",
     "@textlint/text-to-ast": "^15.5.2",
     "sentence-splitter": "^5.0.0"
